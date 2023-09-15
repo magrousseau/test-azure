@@ -1,0 +1,30 @@
+trigger:
+- '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.8'
+  displayName: 'Set up Python 3.8'
+
+- script: | # Install dependencies
+    python --version
+  displayName: 'Check Python Version'
+
+    python -m pip install --upgrade pip
+    pip install pipenv
+    pipenv --python 3.8
+    pipenv install nose pylint --dev
+  displayName: 'Install dependencies'
+
+- script: |  # Lint with pylint
+    pipenv run pylint app
+  displayName: 'Lint with pylint'
+
+- script: |  # Tests with nose
+    pipenv run nosetests
+  displayName: 'Test with nose'
